@@ -1,6 +1,11 @@
 serviceworker:
   version: VERSION
   js:
+    https://www.gstatic.com/firebasejs/4.11.0/firebase.js: { type: external, minified: true }
     js/serviceworker-load.js: {}
+    js/notification.js: {}
+
   dependencies:
     - core/drupalSettings
+
+   

@@ -23,3 +23,15 @@ pwa.manifest:
     _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_manifest'
   requirements:
     _access: 'TRUE'
+pwa.firebase.sw:
+  path: /firebase-messaging-sw.js
+  defaults:
+   _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_firebase_sw'
+  requirements:
+    _access: 'TRUE'
+pwa.revieve.token:
+  path: /firebase-send-token
+  defaults:
+    _controller: '\Drupal\pwa\Controller\PWAController::pwa_token_recieved'
+  requirements:
+    _access: 'TRUE'

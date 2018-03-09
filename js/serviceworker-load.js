@@ -1,5 +1,5 @@
 (function (drupalSettings) {
-
+  
   if (!('serviceWorker' in navigator)) {
     return;
   }
@@ -49,89 +49,5 @@
     }
   });
 
-
-  //code Arno
-  //check if browser supports push notifications
-  if ('PushManager' in window && sw) {
-    //push manager is supported
-    console.info('we support push notifications');
-    subscribeUserToPush();
-    sendSubscriptionToBackEnd();
-  }
-
-  //function installation when something happens
-  //TODO: add this to a user input
-  function askPermission() {
-    return new Promise(function (resolve, reject) {
-        const permissionResult = Notification.requestPermission(function (result) {
-          resolve(result);
-        });
-
-        if (permissionResult) {
-          permissionResult.then(resolve, reject);
-        }
-      })
-      .then(function (permissionResult) {
-        if (permissionResult !== 'granted') {
-          throw new Error('We weren\'t granted permission.');
-        }
-      });
-  }
-
-  /**
-   *function subscribes user to push notificaitons
-   if we have not asked permission the browser will automaticly ask it for us. 
-   */
-  function subscribeUserToPush() {
-    return navigator.serviceWorker.register('/serviceworker-pwa.js', {
-        scope: '/'
-      }).then(function (registration) {
-        const subscribeOptions = {
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(
-            'BAiy6-VNN1s72Ye40O9RaZ_CU5n3lloJiwdgJShC2nMeDaFFo7XKw71zcXZMPe1tYGcUyRjWtM2dRgZwn86LGp8'
-          )
-        };
-
-        return registration.pushManager.subscribe(subscribeOptions);
-      })
-      .then(function (pushSubscription) {
-        console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-        return pushSubscription;
-      });
-  }
-
-  function sendSubscriptionToBackEnd(subscription) {
-    return fetch('/api/save-subscription/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(subscription)
-    })
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error('Bad status code from server.');
-      }
-  
-      return response.json();
-    })
-    .then(function(responseData) {
-      if (!(responseData.data && responseData.data.success)) {
-        throw new Error('Bad response from server.');
-      }
-    });
-  }
-
-  //code from https://gist.github.com/malko/ff77f0af005f684c44639e4061fa8019
-  function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/')
-    ;
-    const rawData = window.atob(base64);
-    return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-  }
 
 }(drupalSettings));

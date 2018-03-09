@@ -13,6 +13,7 @@ function pwa_page_attachments(array &$attachments) {
     if (!\Drupal::currentUser()->hasPermission('access pwa')) {
         return;
     }
+
     $attachments['#attached']['library'][] = 'pwa/serviceworker';
     $attachments['#attached']['drupalSettings']['pwa'] = [
         'precache' => ['/', '/offline'],
@@ -22,23 +23,25 @@ function pwa_page_attachments(array &$attachments) {
     $language_manager = \Drupal::languageManager();
     $lang = $language_manager->getCurrentLanguage()->getId();
     //default language gets ignored in url
-    if($lang == $language_manager->getDefaultLanguage()->getId()) $lang = '';
+    if ($lang == $language_manager->getDefaultLanguage()->getId()) $lang = '';
     else $lang = '/' . $lang;
     $attachments['#attached']['html_head'][] = [[
         '#tag' => 'link',
         '#attributes' => [
             'rel' => 'manifest',
-            'href' => $lang .  '/manifest.json',
+            'href' => $lang . '/manifest.json',
         ],
     ], 'manifest'];
-    //todo: change theme collor to config
+
+    $config = \Drupal::config('pwa.config');
     $attachments['#attached']['html_head'][] = [[
         '#tag' => 'meta',
         '#attributes' => [
             'name' => 'theme-color',
-            'content' => '#ffffff',
+            'content' => $config->get('theme_color'),
         ],
     ], 'meta_theme_color'];
+  
 
 }
 

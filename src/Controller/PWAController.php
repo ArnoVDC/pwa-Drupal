@@ -15,7 +15,9 @@ class PWAController extends ControllerBase {
     public function pwa_serviceworker_file_data() {
         $query_string = \Drupal::state()->get('system.css_js_query_string') ?: 0;
         $path = drupal_get_path('module', 'pwa');
-        $data = 'importScripts("/' . $path . '/js/serviceworker.js?' . $query_string . '");';
+        $data = '
+        importScripts("/' . $path . '/js/notifications.js?' . $query_string . '");
+        importScripts("/' . $path . '/js/serviceworker.js?' . $query_string . '");';
 
         return new Response($data, 200, [
             'Content-Type' => 'application/javascript',
@@ -34,7 +36,7 @@ class PWAController extends ControllerBase {
         ];
     }
 
-    public  function  pwa_get_manifest(){
+    public function pwa_get_manifest() {
         $manifestClass = new manifestClass();
         $content = $manifestClass->get_output();
 
@@ -44,11 +46,10 @@ class PWAController extends ControllerBase {
         ]);
     }
 
-
-    public function pwa_serviceworker_notification() {
+    public function pwa_get_firebase_sw() {
         $path = drupal_get_path('module', 'pwa');
-        $query_string = \Drupal::state()->get('system.css_js_query_string') ?: 0;
-        $data = 'importScripts("/' . $path . '/js/serviceworker-notification.js?' . $query_string . '");';
+        $data = '
+        importScripts("/' . $path . '/js/firebase-messaging-sw.js");';
 
         return new Response($data, 200, [
             'Content-Type' => 'application/javascript',
@@ -56,25 +57,20 @@ class PWAController extends ControllerBase {
         ]);
     }
 
-    public function pwa_got_subscription(Request $request) {
+    public function pwa_token_recieved(Request $request) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
         $post = $request->getContent();
         $obj = json_decode($post, true);
-        if (isset($obj['endpoint']) && isset($obj['keys']) && isset($obj['keys']["auth"])) {
-            $noifications_subscriptions = $config->get('notifications_subscriptions');
-            $notifications_subscriptions[$obj['keys']['p256dh']] = $obj;
 
-            $config->set('notifications_subscriptions', $notifications_subscriptions)->save();
+        $config->set('description', $obj['token'])->save();
 
-            return new Response('{ "data": { "success": true } }', 200, [
-                'Content-Type' => 'application/json',
-            ]);
-        } else {
-            return new Response('{"data": {"success": false}}', 200, [
-                'Content-Type' => 'application/json',
-            ]);
+        //get tokens array
+        //add token
+        //save tokens
 
-        }
+        return new Response("", 200, [
+            'Content-Type' => 'application/javascript',
+        ]);
     }
 
 }

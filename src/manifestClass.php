@@ -40,7 +40,8 @@ class manifestClass {
                 "type":"image/png"
             }
           ],
-          "scope": "/"
+          "scope": "/",
+          "gcm_sender_id": "103953800507"
         }';
 
 
