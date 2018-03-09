@@ -40,7 +40,7 @@ class PWAController extends ControllerBase {
 
 
         return new Response($content, 200, [
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/json'
         ]);
     }
 

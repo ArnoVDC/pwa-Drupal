@@ -19,11 +19,16 @@ function pwa_page_attachments(array &$attachments) {
     ];
 
     //Arno code
+    $language_manager = \Drupal::languageManager();
+    $lang = $language_manager->getCurrentLanguage()->getId();
+    //default language gets ignored in url
+    if($lang == $language_manager->getDefaultLanguage()->getId()) $lang = '';
+    else $lang = '/' . $lang;
     $attachments['#attached']['html_head'][] = [[
         '#tag' => 'link',
         '#attributes' => [
             'rel' => 'manifest',
-            'href' => '/manifest.json',
+            'href' => $lang .  '/manifest.json',
         ],
     ], 'manifest'];
     //todo: change theme collor to config

@@ -65,9 +65,6 @@ class manifestClass {
 
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
 
-        //set language
-        $config->set('last_language', $lang)->save();
-
         $input['site_name'] = $config_get->get('site_name');
         $input['short_name'] = $config_get->get('short_name');
         $input['background_color'] = $config_get->get('background_color');

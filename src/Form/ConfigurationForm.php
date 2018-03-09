@@ -245,10 +245,10 @@ class ConfigurationForm extends ConfigFormBase {
             imagesavealpha($dst, true);
 
             imagecopyresampled($dst, $src, 0, 0, 0, 0, $newSize, $newSize, $oldSize, $oldSize);
-            $path_to_copy = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/copy.png';
+            $path_to_copy = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/'. $file->getFilename() .'copy.png';
             if ($stream = fopen($path_to_copy, 'w+')) {
                 imagepng($dst, $stream);
-                $config->set('image_small', $files_path . 'copy.png')->save();
+                $config->set('image_small', $files_path . $file->getFilename() .'copy.png')->save();
             }
         }
 

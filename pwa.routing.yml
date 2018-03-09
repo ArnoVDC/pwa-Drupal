@@ -18,7 +18,7 @@ pwa.config:
   requirements:
     _permission: 'administer pwa'
 pwa.manifest:
-  path: '/manifest.json'
+  path: /manifest.json
   defaults:
     _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_manifest'
   requirements:
