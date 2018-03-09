@@ -252,34 +252,7 @@ class ConfigurationForm extends ConfigFormBase {
             }
         }
 
-
-        $manifestClass->create();
-
-        $this->sendNotification();
-
         parent::submitForm($form, $form_state);
-    }
-
-    public function sendNotification() {
-        $config = \Drupal::config('pwa.config');
-        $notifications = $config->get('notifications_subscriptions');
-        $public_key = 'BFwXlps63ddWbZXNaQ198frfmz7aUjWr-cNVoiFFlY3i4KcKbrYo44JeDWErJtkVXDFZ1ZqQX6JLCROuqz14h7Q';
-        $private_key = 'dbpY7dilPh-vwvx8pfCI1E6RP9HGk-nKiX-7dXUjcIY';
-
-//        $webPush = new WebPush();
-//        foreach ($notifications as $key => $value) {
-//            try {
-//                $webPush->sendNotification(
-//                    $value['endpoint'],
-//                    'configuration changed',
-//                    $key,
-//                    $value['keys']['auth']
-//                );
-//            } catch (\ErrorException $e) {
-//                //todo: trow error
-//            }
-//        }
-//        $webPush->flush();
     }
 
     /**

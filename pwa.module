@@ -19,18 +19,14 @@ function pwa_page_attachments(array &$attachments) {
     ];
 
     //Arno code
-    $manifestClass = new manifestClass();
-    $manifest_path = $manifestClass->get_manifest_uri();
-    if(!file_exists ( $manifest_path)) {
-       $manifestClass->create();
-    }
     $attachments['#attached']['html_head'][] = [[
         '#tag' => 'link',
         '#attributes' => [
             'rel' => 'manifest',
-            'href' => $manifestClass->get_manifest_name(),
+            'href' => '/manifest.json',
         ],
     ], 'manifest'];
+    //todo: change theme collor to config
     $attachments['#attached']['html_head'][] = [[
         '#tag' => 'meta',
         '#attributes' => [
@@ -38,13 +34,6 @@ function pwa_page_attachments(array &$attachments) {
             'content' => '#ffffff',
         ],
     ], 'meta_theme_color'];
-
-    //language check
-    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
-    $config = \Drupal::config('pwa.config');
-    if($config->get('last_language') != $language){
-        $manifestClass->create();
-    }
 
 }
 

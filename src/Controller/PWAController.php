@@ -5,6 +5,7 @@ namespace Drupal\pwa\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Drupal\pwa\manifestClass;
 
 /**
  * Default controller for the pwa module.
@@ -32,6 +33,17 @@ class PWAController extends ControllerBase {
             ],
         ];
     }
+
+    public  function  pwa_get_manifest(){
+        $manifestClass = new manifestClass();
+        $content = $manifestClass->get_output();
+
+
+        return new Response($content, 200, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
 
     public function pwa_serviceworker_notification() {
         $path = drupal_get_path('module', 'pwa');

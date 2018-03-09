@@ -17,3 +17,9 @@ pwa.config:
     _title: 'Progressive web app configuration'
   requirements:
     _permission: 'administer pwa'
+pwa.manifest:
+  path: '/manifest.json'
+  defaults:
+    _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_manifest'
+  requirements:
+    _access: 'TRUE'

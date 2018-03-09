@@ -1,6 +1,6 @@
 <?php
 
-namespace drupal\pwa;
+namespace Drupal\pwa;
 
 class manifestClass {
 
@@ -13,7 +13,7 @@ class manifestClass {
     /**
      *function creates the manifest file
      */
-    public function create() {
+    public function get_output() {
         //get values
         $values = $this->getCleanValues();
 
@@ -43,16 +43,8 @@ class manifestClass {
           "scope": "/"
         }';
 
-        //write manifest file
-        if ($stream = fopen($this->get_manifest_uri(), 'w+')) {
-            $f = fwrite($stream, $output);
-            $f1 = fclose($stream);
-        }
 
-        if ($stream == FALSE || $f == FALSE || $f1 == FALSE) {
-            drupal_set_message(t('Could not save manifest file. Try again!'), 'error');
-        }
-
+        return $output;
     }
 
     /**
@@ -115,24 +107,6 @@ class manifestClass {
     }
 
     /**
-     * function returns the full path uri of the manifest file
-     * @return string
-     */
-    public function get_manifest_uri() {
-        return getcwd() . $this->manifestUri;
-    }
-
-    /**
-     *function deletes the manifest file and the icon that is used for it
-     */
-    public function delete_manifest() {
-        unlink($this->get_manifest_uri());
-        $default_image = \Drupal::config('pwa.config')->get('default_image');
-        if (!$default_image)
-            $this->delete_image();
-    }
-
-    /**
      *function deletes the image that is used for the manifest file
      */
     public function delete_image() {
@@ -141,13 +115,5 @@ class manifestClass {
         unlink($path);
         $path = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/copy.png';
         unlink($path);
-    }
-
-    /**
-     * function return the manifest file name
-     * @return string
-     */
-    public function get_manifest_name() {
-        return $this->manifestUri;
     }
 }

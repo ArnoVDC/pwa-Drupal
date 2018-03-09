@@ -48,8 +48,9 @@ function pwa_requirements($phase) {
  */
 function pwa_install() {
     user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access pwa']);
+
+    //default values for the manifest file
     $systemConfig = \Drupal::config('system.site');
-    //todo: make clean string
     $configName = $systemConfig->get('name');
     $configDescription = $systemConfig->get('slogan');
     $configLang = \Drupal::languageManager()->getCurrentLanguage()->getId();
@@ -66,9 +67,6 @@ function pwa_install() {
     $config->set('display', 'standalone')->save();
     $config->set('lang', $configLang)->save();
 
-    $manifestClass = new manifestClass();
-    $manifestClass->create();
-
 }
 
 /**
@@ -76,6 +74,6 @@ function pwa_install() {
  */
 function pwa_uninstall() {
     $controller = new manifestClass();
-    $controller->delete_manifest();
+    $controller->delete_image();
 }
 
