@@ -1,0 +1,3 @@
+services:
+  pwa.manifestClass:
+    class: Drupal\pwa\manifestClass

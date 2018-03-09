@@ -1,0 +1,153 @@
+<?php
+
+namespace drupal\pwa;
+
+class manifestClass {
+
+    private $manifestUri = '';
+
+    public function __construct() {
+        $this->manifestUri = '/manifest.json';
+    }
+
+    /**
+     *function creates the manifest file
+     */
+    public function create() {
+        //get values
+        $values = $this->getCleanValues();
+
+
+        //create output
+        $output = '
+        {
+          "name": "' . $values['site_name'] . '",   
+          "short_name": "' . $values['short_name'] . '",
+          "start_url": ".",
+          "display": "' . $values['display'] . '",
+          "background_color": "' . $values['background_color'] . '",
+          "theme_color": "' . $values['theme_color'] . '",
+          "description": "' . $values['description'] . '",
+          "lang": "' . $values['lang'] . '",
+          "icons": [{
+              "src": "' . $values['image_small'] . '",
+              "sizes": "192x192",
+              "type": "image/png"
+            },
+            {
+                "src": "' . $values['image'] . '",
+                "sizes": "512x512",
+                "type":"image/png"
+            }
+          ],
+          "scope": "/"
+        }';
+
+        //write manifest file
+        if ($stream = fopen($this->get_manifest_uri(), 'w+')) {
+            $f = fwrite($stream, $output);
+            $f1 = fclose($stream);
+        }
+
+        if ($stream == FALSE || $f == FALSE || $f1 == FALSE) {
+            drupal_set_message(t('Could not save manifest file. Try again!'), 'error');
+        }
+
+    }
+
+    /**
+     * function checks the values in config and add default value if necessary
+     *
+     * @return array
+     */
+    private function getCleanValues() {
+        $output = array();
+        $input = array();
+
+        //change config lang
+        $language_manager = \Drupal::languageManager();
+        $lang = $language_manager->getCurrentLanguage()->getId();
+        $language = $language_manager->getLanguage($lang);
+        $language_manager->setConfigOverrideLanguage($language);
+        $config_get = \Drupal::config('pwa.config');
+
+        $config = \Drupal::service('config.factory')->getEditable('pwa.config');
+
+        //set language
+        $config->set('last_language', $lang)->save();
+
+        $input['site_name'] = $config_get->get('site_name');
+        $input['short_name'] = $config_get->get('short_name');
+        $input['background_color'] = $config_get->get('background_color');
+        $input['theme_color'] = $config_get->get('theme_color');
+        $input['image'] = $config_get->get('image');
+        $input['display'] = $config_get->get('display');
+        $input['default_image'] = $config_get->get('default_image');
+        $input['image_small'] = $config_get->get('image_small');
+
+        if ($input["default_image"] == TRUE) {
+            $input['image'] = theme_get_setting('logo')['url'];
+            $input['image_small'] = $input['image'];
+        }
+
+        foreach ($input as $key => $value) {
+            if ($value !== '') $output[$key] = $value;
+            elseif ($config->get($key) !== '') $output[$key] = $config->get($key);
+            else if ($key === 'background_color' || $key === 'theme_color') {
+                $output[$key] = '#ffffff';
+                $config->set($key, '#ffffff')->save();
+            } else if ($key === 'image' && $input['dafault_image'] != 1) {
+                //todo make img not found
+                $output[$key] = 'url/to/default/img';
+                $config->set($key, 'url/to/default/img')->save();
+            } else if ($key == 'display') {
+                $output[$key] = 'standalone';
+                $config->set($key, 'standalone')->save();
+            } else {
+                $output[$key] = 'default value for ' . $key . ', go to configuration to change';
+                $config->set($key, 'default value for ' . $key . ', go to configuration to change')->save();
+            }
+        }
+        //values that's not required
+        $output['description'] = $config_get->get('description');
+
+        return $output;
+    }
+
+    /**
+     * function returns the full path uri of the manifest file
+     * @return string
+     */
+    public function get_manifest_uri() {
+        return getcwd() . $this->manifestUri;
+    }
+
+    /**
+     *function deletes the manifest file and the icon that is used for it
+     */
+    public function delete_manifest() {
+        unlink($this->get_manifest_uri());
+        $default_image = \Drupal::config('pwa.config')->get('default_image');
+        if (!$default_image)
+            $this->delete_image();
+    }
+
+    /**
+     *function deletes the image that is used for the manifest file
+     */
+    public function delete_image() {
+        $config = \Drupal::config('pwa.config');
+        $path = getcwd() . $config->get('image');
+        unlink($path);
+        $path = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/copy.png';
+        unlink($path);
+    }
+
+    /**
+     * function return the manifest file name
+     * @return string
+     */
+    public function get_manifest_name() {
+        return $this->manifestUri;
+    }
+}

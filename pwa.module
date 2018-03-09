@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ */
+
+use Drupal\pwa\manifestClass;
+
+/**
+ * Implements hook_page_attachments().
+ * @param array $attachments
+ */
+function pwa_page_attachments(array &$attachments) {
+    if (!\Drupal::currentUser()->hasPermission('access pwa')) {
+        return;
+    }
+    $attachments['#attached']['library'][] = 'pwa/serviceworker';
+    $attachments['#attached']['drupalSettings']['pwa'] = [
+        'precache' => ['/', '/offline'],
+    ];
+
+    //Arno code
+    $manifestClass = new manifestClass();
+    $manifest_path = $manifestClass->get_manifest_uri();
+    if(!file_exists ( $manifest_path)) {
+       $manifestClass->create();
+    }
+    $attachments['#attached']['html_head'][] = [[
+        '#tag' => 'link',
+        '#attributes' => [
+            'rel' => 'manifest',
+            'href' => $manifestClass->get_manifest_name(),
+        ],
+    ], 'manifest'];
+    $attachments['#attached']['html_head'][] = [[
+        '#tag' => 'meta',
+        '#attributes' => [
+            'name' => 'theme-color',
+            'content' => '#ffffff',
+        ],
+    ], 'meta_theme_color'];
+
+    //language check
+    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $config = \Drupal::config('pwa.config');
+    if($config->get('last_language') != $language){
+        $manifestClass->create();
+    }
+
+}
+
+

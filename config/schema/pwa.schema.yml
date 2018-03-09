@@ -1,0 +1,13 @@
+pwa.config:
+  type: config_object
+  label: 'PWA config'
+  mapping:
+    site_name:
+      type:   text
+      label:  'Web app name'
+    short_name:
+      type:   text
+      label:  'Short name'
+    description:
+      type:   text
+      label:  'Description'

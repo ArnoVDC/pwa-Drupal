@@ -1,0 +1,81 @@
+<?php
+/**
+ * @file
+ */
+
+use Drupal\user\RoleInterface,
+    Drupal\pwa\manifestClass;
+
+/**
+ * Implements hook_requirements().
+ */
+function pwa_requirements($phase) {
+    $requirements = [];
+
+    if ($phase !== 'runtime') {
+        return $requirements;
+    }
+
+    $t = 't';
+    if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER["REQUEST_SCHEME"]) && $_SERVER["REQUEST_SCHEME"] === 'https')) {
+        $requirements['pwa'] = [
+            'title' => $t('Progressive Web App'),
+            'value' => $t('HTTPS on'),
+            'severity' => REQUIREMENT_OK,
+            'description' => $t('Please make sure the certificate of %domain is valid for offline functionality to work.', ['%domain' => $_SERVER['HTTP_HOST']]),
+        ];
+    } elseif (in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1'])) {
+        $requirements['pwa'] = [
+            'title' => $t('Progressive Web App'),
+            'value' => 'localhost',
+            'severity' => REQUIREMENT_WARNING,
+            'description' => $t('You will need to configure HTTPS on your domain for this module to work.'),
+        ];
+    } else {
+        $requirements['pwa'] = [
+            'title' => $t('Progressive Web App'),
+            'value' => $t('HTTPS off'),
+            'severity' => REQUIREMENT_ERROR,
+            'description' => $t('HTTPS need to be configured for the progressive web app module to work.'),
+        ];
+    }
+
+    return $requirements;
+}
+
+/**
+ * Implements hook_install().
+ */
+function pwa_install() {
+    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access pwa']);
+    $systemConfig = \Drupal::config('system.site');
+    //todo: make clean string
+    $configName = $systemConfig->get('name');
+    $configDescription = $systemConfig->get('slogan');
+    $configLang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+
+    $config = \Drupal::service('config.factory')->getEditable('pwa.config');
+
+    $config->set('site_name', $configName)->save();
+    $config->set('short_name', $configName)->save();
+    $config->set('background_color', '#ffffff')->save();
+    $config->set('theme_color', '#ffffff')->save();
+    $config->set('description', $configDescription)->save();
+    $config->set('default_image', TRUE)->save();
+    $config->set('display', 'standalone')->save();
+    $config->set('lang', $configLang)->save();
+
+    $manifestClass = new manifestClass();
+    $manifestClass->create();
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function pwa_uninstall() {
+    $controller = new manifestClass();
+    $controller->delete_manifest();
+}
+
