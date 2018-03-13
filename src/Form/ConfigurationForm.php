@@ -256,38 +256,10 @@ class ConfigurationForm extends ConfigFormBase {
             }
         }
 
-        //$this->sendNotification();
-
         parent::submitForm($form, $form_state);
     }
 
 
-    private function sendNotification() {
-
-        $config = \Drupal::service('config.factory')->getEditable('pwa.config');
-
-
-
-        $clientToken = 'dSm6AXuzfLs:APA91bGdos-e61k4wmSSyHLzvYL__RJaNwCN2xUU9wn2aMrakX7K_4uy7ughvmfcXT6F5Tzwalpo1FQMTmW14b7RZIN6uo024TfX0-qApihQXaC_ulwV-sxIX4bSEmVZD3UBLabt068u';
-        $key = 'AAAALWTTurI:APA91bGhKU278wTlK45PGJ_cy4Ddh0dmc_oxlV47JSqgV30MmR4qfxITinadMuIoTlTTHjYLO74xyyilVANYzWUiFlt_GKqovcUgTiYOxA8InvP3ZIXSiQ9B0AbDoZFoJgov9m3vQYDR';
-
-        $url = 'https://fcm.googleapis.com/fcm/send';
-
-        $response = \Drupal::httpClient()->post($url, [
-            'json' => [
-                    "to" => $clientToken,
-                    "notification" => [
-                        "body" => "This is my first notification",
-                        "title" => "Hello World!",
-                    ],
-            ],
-            'headers' => [
-                'Content-type' => 'application/json',
-                'Authorization' => 'key=' . $key,
-            ],
-        ])->getBody()->getContents();
-
-    }
 
     /**
      * Gets the configuration names that will be editable.

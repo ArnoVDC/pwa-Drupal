@@ -66,10 +66,11 @@ class PWAController extends ControllerBase {
 
         //get tokens array
         $tokens = $config->get('tokens');
-        //add token
-        $tokens[] = $token;
+
+        if(!in_array($token, $tokens)) $tokens[] = $token;
+
         //save tokens
-        $config->get('tokens', $tokens);
+        $config->set('tokens', $tokens)->save();
 
         return new Response("", 200, [
             'Content-Type' => 'application/javascript',

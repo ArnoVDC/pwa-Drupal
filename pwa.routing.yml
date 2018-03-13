@@ -35,3 +35,10 @@ pwa.revieve.token:
     _controller: '\Drupal\pwa\Controller\PWAController::pwa_token_recieved'
   requirements:
     _access: 'TRUE'
+pwa.config.notification:
+  path: '/admin/config/services/notifications'
+  defaults:
+    _form: '\Drupal\pwa\Form\NotificationForm'
+    _title: 'Send notifications'
+  requirements:
+    _permission: 'administer pwa'
