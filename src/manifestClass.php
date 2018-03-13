@@ -111,7 +111,7 @@ class manifestClass {
         $config = \Drupal::config('pwa.config');
         $path = getcwd() . $config->get('image');
         unlink($path);
-        $path = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/copy.png';
+        $path .= 'copy.png';
         unlink($path);
     }
 }

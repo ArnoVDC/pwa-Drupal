@@ -6,7 +6,6 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\pwa\manifestClass;
-use Minishlink\WebPush\WebPush;
 
 class ConfigurationForm extends ConfigFormBase {
 
@@ -210,9 +209,14 @@ class ConfigurationForm extends ConfigFormBase {
         $config->set('default_image', $default_image)->save();
 
         if (!empty($fid)) {
+
             $file = File::load($fid);
+
+            $file_usage = \Drupal::service('file.usage');
             $file->setPermanent();
             $file->save();
+
+            $file_usage->add($file, 'PWA', 'PWA', \Drupal::currentUser()->id());
 
             //save new image
             $files_path = file_create_url("public://pwa") . '/';
@@ -245,14 +249,44 @@ class ConfigurationForm extends ConfigFormBase {
             imagesavealpha($dst, true);
 
             imagecopyresampled($dst, $src, 0, 0, 0, 0, $newSize, $newSize, $oldSize, $oldSize);
-            $path_to_copy = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/'. $file->getFilename() .'copy.png';
+            $path_to_copy = \Drupal::service('file_system')->realpath(file_default_scheme() . "://") . '/pwa/' . $file->getFilename() . 'copy.png';
             if ($stream = fopen($path_to_copy, 'w+')) {
                 imagepng($dst, $stream);
-                $config->set('image_small', $files_path . $file->getFilename() .'copy.png')->save();
+                $config->set('image_small', $files_path . $file->getFilename() . 'copy.png')->save();
             }
         }
 
+        //$this->sendNotification();
+
         parent::submitForm($form, $form_state);
+    }
+
+
+    private function sendNotification() {
+
+        $config = \Drupal::service('config.factory')->getEditable('pwa.config');
+
+
+
+        $clientToken = 'dSm6AXuzfLs:APA91bGdos-e61k4wmSSyHLzvYL__RJaNwCN2xUU9wn2aMrakX7K_4uy7ughvmfcXT6F5Tzwalpo1FQMTmW14b7RZIN6uo024TfX0-qApihQXaC_ulwV-sxIX4bSEmVZD3UBLabt068u';
+        $key = 'AAAALWTTurI:APA91bGhKU278wTlK45PGJ_cy4Ddh0dmc_oxlV47JSqgV30MmR4qfxITinadMuIoTlTTHjYLO74xyyilVANYzWUiFlt_GKqovcUgTiYOxA8InvP3ZIXSiQ9B0AbDoZFoJgov9m3vQYDR';
+
+        $url = 'https://fcm.googleapis.com/fcm/send';
+
+        $response = \Drupal::httpClient()->post($url, [
+            'json' => [
+                    "to" => $clientToken,
+                    "notification" => [
+                        "body" => "This is my first notification",
+                        "title" => "Hello World!",
+                    ],
+            ],
+            'headers' => [
+                'Content-type' => 'application/json',
+                'Authorization' => 'key=' . $key,
+            ],
+        ])->getBody()->getContents();
+
     }
 
     /**

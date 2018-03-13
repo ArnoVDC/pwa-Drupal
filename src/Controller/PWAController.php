@@ -16,7 +16,6 @@ class PWAController extends ControllerBase {
         $query_string = \Drupal::state()->get('system.css_js_query_string') ?: 0;
         $path = drupal_get_path('module', 'pwa');
         $data = '
-        importScripts("/' . $path . '/js/notifications.js?' . $query_string . '");
         importScripts("/' . $path . '/js/serviceworker.js?' . $query_string . '");';
 
         return new Response($data, 200, [
@@ -49,6 +48,8 @@ class PWAController extends ControllerBase {
     public function pwa_get_firebase_sw() {
         $path = drupal_get_path('module', 'pwa');
         $data = '
+        importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
+        importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
         importScripts("/' . $path . '/js/firebase-messaging-sw.js");';
 
         return new Response($data, 200, [
@@ -61,12 +62,14 @@ class PWAController extends ControllerBase {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
         $post = $request->getContent();
         $obj = json_decode($post, true);
-
-        $config->set('description', $obj['token'])->save();
+        $token = $obj['token'];
 
         //get tokens array
+        $tokens = $config->get('tokens');
         //add token
+        $tokens[] = $token;
         //save tokens
+        $config->get('tokens', $tokens);
 
         return new Response("", 200, [
             'Content-Type' => 'application/javascript',
