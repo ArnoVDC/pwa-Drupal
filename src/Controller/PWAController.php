@@ -46,10 +46,14 @@ class PWAController extends ControllerBase {
     }
 
     public function pwa_get_firebase_sw() {
+        $config = \Drupal::config('pwa.config');
+        $messagingKey = $config->get('messagingSenderId');
+
         $path = drupal_get_path('module', 'pwa');
         $data = '
         importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
         importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
+        firebase.initializeApp({\'messagingSenderId\': \''.$messagingKey.'\'});
         importScripts("/' . $path . '/js/firebase-messaging-sw.js");';
 
         return new Response($data, 200, [
@@ -67,13 +71,38 @@ class PWAController extends ControllerBase {
         //get tokens array
         $tokens = $config->get('tokens');
 
-        if(!in_array($token, $tokens)) $tokens[] = $token;
+        if (!in_array($token, $tokens)) $tokens[] = $token;
 
         //save tokens
         $config->set('tokens', $tokens)->save();
 
         return new Response("", 200, [
             'Content-Type' => 'application/javascript',
+        ]);
+    }
+
+    public function pwa_firebase_config() {
+        $config = \Drupal::config('pwa.config');
+
+        $apiKey = $config->get('apiKey');
+        $authDomain = $config->get('authDomain');
+        $databaseURL = $config->get('databaseURL');
+        $projectId = $config->get('projectId');
+        $storageBucket = $config->get('storageBucket');
+        $messagingSenderId = $config->get('messagingSenderId');
+        $keyPair = $config->get('keyPair');
+
+        $data = '{"config": { "apiKey": "'. $apiKey .'", "authDomain": "'. $authDomain .'", "databaseURL": "'. $databaseURL .'",
+            "projectId": "'. $projectId .'",
+            "storageBucket": "'. $storageBucket .'",
+            "messagingSenderId": "'. $messagingSenderId .'"
+            },
+            "publicClientkey": "'. $keyPair .'"
+            }';
+
+
+        return new Response($data, 200, [
+            'Content-Type' => 'application/json',
         ]);
     }
 

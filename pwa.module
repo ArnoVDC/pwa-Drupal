@@ -41,7 +41,6 @@ function pwa_page_attachments(array &$attachments) {
             'content' => $config->get('theme_color'),
         ],
     ], 'meta_theme_color'];
-  
 
 }
 

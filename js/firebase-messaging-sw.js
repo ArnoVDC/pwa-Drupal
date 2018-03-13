@@ -1,9 +1,4 @@
-//importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js');
-//importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');
 
-firebase.initializeApp({
-  'messagingSenderId': '194965125810'
-});
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
@@ -18,6 +13,5 @@ messaging.setBackgroundMessageHandler(function(payload) {
     icon: '/firebase-logo.png'
   };
 
-  return self.registration.showNotification(notificationTitle,
-    notificationOptions);
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });

@@ -8,9 +8,8 @@ class notificationClass {
 
     public function sendMessageToAllUsers($title, $message) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
-        $key = 'AAAALWTTurI:APA91bGhKU278wTlK45PGJ_cy4Ddh0dmc_oxlV47JSqgV30MmR4qfxITinadMuIoTlTTHjYLO74xyyilVANYzWUiFlt_GKqovcUgTiYOxA8InvP3ZIXSiQ9B0AbDoZFoJgov9m3vQYDR';
         $tokens = $config->get('tokens');
-        $des = '';
+        $key = $config->get('server_key');
         foreach ($tokens as $token) {
             $url = 'https://fcm.googleapis.com/fcm/send';
             $response = \Drupal::httpClient()->post($url, [
@@ -19,6 +18,8 @@ class notificationClass {
                     "notification" => [
                         "body" => $message,
                         "title" => $title,
+                        "click_action"=> "https://" . $_SERVER['HTTP_HOST'],
+                        "icon" => 'http://localhost.com/sites/default/files/pwa/metal_chain_fence_png_stock_cc1_large_by_annamae22-da7lguz.pngcopy.png',
                     ],
                 ],
                 'headers' => [

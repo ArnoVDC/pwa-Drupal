@@ -9,12 +9,73 @@ use Drupal\pwa\notificationClass;
 class  NotificationForm extends ConfigFormBase {
 
     public function buildForm(array $form, FormStateInterface $form_state) {
+        $config = \Drupal::config('pwa.config');
+
+
+        $form['apiKey'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("apiKey"),
+            "#required" => true,
+            "#default_value" => $config->get('apiKey'),
+            "#maxlength" => 160,
+        ];
+        $form['authDomain'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("authDomain"),
+            "#required" => true,
+            "#default_value" => $config->get('authDomain'),
+            "#maxlength" => 160,
+        ];
+        $form['databaseURL'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("databeseURL"),
+            "#required" => true,
+            "#default_value" => $config->get('databaseURL'),
+            "#maxlength" => 160,
+        ];
+        $form['projectId'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("projectId"),
+            "#required" => true,
+            "#default_value" => $config->get('projectId'),
+            "#maxlength" => 160,
+        ];
+        $form['storageBucket'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("storageBucket"),
+            "#required" => true,
+            "#default_value" => $config->get('storageBucket'),
+            "#maxlength" => 160,
+        ];
+        $form['messagingSenderId'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("messagingSenderId"),
+            "#required" => true,
+            "#default_value" => $config->get('messagingSenderId'),
+            "#maxlength" => 160,
+        ];
+        $form['keyPair'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("Webpush certificate, public key"),
+            "#required" => true,
+            "#default_value" => $config->get('keyPair'),
+            "#maxlength" => 160,
+        ];
+
+        $form['key'] = [
+            "#type" => 'textfield',
+            "#title"=> $this->t("server key"),
+            "#description" => $this->t('You can find the server key in you firebase settings'),
+            "#required" => true,
+            "#default_value" => $config->get('server_key'),
+            "#maxlength" => 160,
+        ];
+
         $form['title'] = [
             "#type" => 'textfield',
             '#title' => $this->t('Title'),
             '#required' => TRUE,
             "#maxlength" => 100,
-            '#size' => 100,
         ];
 
         $form['message'] = [
@@ -22,7 +83,6 @@ class  NotificationForm extends ConfigFormBase {
             '#title' => $this->t('Message'),
             '#required' => TRUE,
             "#maxlength" => 255,
-            '#size' => 255,
         ];
 
         return parent::buildForm($form, $form_state);
@@ -30,6 +90,18 @@ class  NotificationForm extends ConfigFormBase {
 
 
     public function submitForm(array &$form, FormStateInterface $form_state) {
+        $config = \Drupal::service('config.factory')->getEditable('pwa.config');
+
+        $config->set('apiKey', $form_state->getValue('apiKey'))->save();
+        $config->set('authDomain', $form_state->getValue('authDomain'))->save();
+        $config->set('databaseURL', $form_state->getValue('databaseURL'))->save();
+        $config->set('projectId', $form_state->getValue('projectId'))->save();
+        $config->set('storageBucket', $form_state->getValue('storageBucket'))->save();
+        $config->set('messagingSenderId', $form_state->getValue('messagingSenderId'))->save();
+        $config->set('keyPair', $form_state->getValue('keyPair'))->save();
+
+        $config->set('server_key', $form_state->getValue('key'))->save();
+
         //send notification
         $notificationClass = new notificationClass();
 

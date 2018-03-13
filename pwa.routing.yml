@@ -42,3 +42,9 @@ pwa.config.notification:
     _title: 'Send notifications'
   requirements:
     _permission: 'administer pwa'
+pwa.firebase.config:
+  path: /firebase-get-config
+  defaults:
+    _controller: '\Drupal\pwa\Controller\PWAController::pwa_firebase_config'
+  requirements:
+    _access: 'TRUE'
