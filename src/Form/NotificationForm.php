@@ -24,11 +24,12 @@ class  NotificationForm extends ConfigFormBase {
             "#title"=> $this->t("Firebase configuration code"),
             "#required" => true,
             "#default_value" => $config->get('firebase_code'),
-            '#description'=> $this->t('Copy and past your firebase configurationcode (for web) here. You can copy the code with the script tags.')
+            '#description'=> $this->t('Copy and past your firebase configurationcode (for web) here. You can copy the code with the script tags. You can learn how right <a target="_blank" href="https://firebase.google.com/docs/web/setup">here</a>.')
         ];
         $form['keyPair'] = [
             "#type" => 'textfield',
             "#title"=> $this->t("Webpush certificate, public key"),
+            "#description" => $this->t('You can find/generate tis key under firebase settings->cloud messaging'),
             "#required" => true,
             "#default_value" => $config->get('keyPair'),
             "#maxlength" => 160,
@@ -37,7 +38,7 @@ class  NotificationForm extends ConfigFormBase {
         $form['key'] = [
             "#type" => 'textfield',
             "#title"=> $this->t("server key"),
-            "#description" => $this->t('You can find the server key in you firebase settings'),
+            "#description" => $this->t('You can find the server key under firebase settings->cloud messaging. Make sure you don\'t use the old one.'),
             "#required" => true,
             "#default_value" => $config->get('server_key'),
             "#maxlength" => 160,
