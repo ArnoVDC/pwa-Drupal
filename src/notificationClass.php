@@ -10,6 +10,9 @@ class notificationClass {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
         $tokens = $config->get('tokens');
         $key = $config->get('server_key');
+        $image = $config->get('image');
+        $image = 'https://' . $_SERVER['HTTP_HOST'] . $image;
+
         foreach ($tokens as $token) {
             $url = 'https://fcm.googleapis.com/fcm/send';
             $response = \Drupal::httpClient()->post($url, [
@@ -19,7 +22,7 @@ class notificationClass {
                         "body" => $message,
                         "title" => $title,
                         "click_action"=> "https://" . $_SERVER['HTTP_HOST'],
-                        "icon" => 'http://localhost.com/sites/default/files/pwa/metal_chain_fence_png_stock_cc1_large_by_annamae22-da7lguz.pngcopy.png',
+                        'icon'=> $image,
                     ],
                 ],
                 'headers' => [
@@ -34,7 +37,6 @@ class notificationClass {
                 unset($id, $tokens);
             }
         }
-
         $config->set("tokens", $tokens)->save();
     }
 }

@@ -13,15 +13,6 @@ xhr.onreadystatechange = function () {
 xhr.send();
 
 
-navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-    scope: '/'
-})
-    .then((registration) => {
-    console.log("sw registered")
-}).catch(function (err) {
-    console.log("error adding sw");
-});
-
 function initFirebase(config, key) {
 
     firebase.initializeApp(config);
