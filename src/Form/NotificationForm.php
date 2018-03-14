@@ -8,6 +8,8 @@ use Drupal\pwa\notificationClass;
 
 class  NotificationForm extends ConfigFormBase {
 
+    private $firebase_code, $firebase_code_clean;
+
     public function buildForm(array $form, FormStateInterface $form_state) {
         $config = \Drupal::config('pwa.config');
 
@@ -52,26 +54,45 @@ class  NotificationForm extends ConfigFormBase {
         return parent::buildForm($form, $form_state);
     }
 
+    public function validateForm(array &$form, FormStateInterface $form_state) {
+        parent::validateForm($form, $form_state);
+
+        $this->firebase_code = $form_state->getValue('firebase_code');
+        $this->firebase_code_clean = $this->getCleanFirebaseCode($this->firebase_code);
+
+        $this->firebase_code_clean = json_decode($this->firebase_code_clean,true);
+
+
+
+        if($this->firebase_code_clean['apiKey'] ==''||
+            $this->firebase_code_clean['authDomain'] ==''||
+            $this->firebase_code_clean['databaseURL'] ==''||
+            $this->firebase_code_clean['projectId'] ==''||
+            $this->firebase_code_clean['storageBucket'] ==''||
+            $this->firebase_code_clean['messagingSenderId'] ==''
+        ){
+            $s = htmlentities('Could not handle firebase code, make sure all of the code is copied. (ex.:"<script src= ... firebase.initializeApp(config);</script>")');
+            $form_state->setErrorByName('firebase_code', $this->t($s));
+        }
+
+    }
+
 
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
 
-        $firebase_code = $form_state->getValue('firebase_code');
-        $firebase_code_clean = $this->getCleanFirebaseCode($firebase_code);
 
-        $config->set('firebase_code', $firebase_code)->save();
-        $config->set('firebase_code_clean', $firebase_code_clean)->save();
 
-        $firebase_code_clean = json_decode($firebase_code_clean,true);
+        $config->set('firebase_code', $this->firebase_code)->save();
+        $config->set('firebase_code_clean', $this->firebase_code_clean)->save();
 
-        $config->set('description', $firebase_code_clean['apiKey'])->save();
 
-        $config->set('apiKey', $firebase_code_clean['apiKey'])->save();
-        $config->set('authDomain',  $firebase_code_clean['authDomain'])->save();
-        $config->set('databaseURL',  $firebase_code_clean['databaseURL'])->save();
-        $config->set('projectId',  $firebase_code_clean['projectId'])->save();
-        $config->set('storageBucket',  $firebase_code_clean['storageBucket'])->save();
-        $config->set('messagingSenderId',  $firebase_code_clean['messagingSenderId'])->save();
+        $config->set('apiKey', $this->firebase_code_clean['apiKey'])->save();
+        $config->set('authDomain',  $this->firebase_code_clean['authDomain'])->save();
+        $config->set('databaseURL',  $this->firebase_code_clean['databaseURL'])->save();
+        $config->set('projectId',  $this->firebase_code_clean['projectId'])->save();
+        $config->set('storageBucket',  $this->firebase_code_clean['storageBucket'])->save();
+        $config->set('messagingSenderId',  $this->firebase_code_clean['messagingSenderId'])->save();
 
         //codes still to get
         $config->set('keyPair', $form_state->getValue('keyPair'))->save();
@@ -89,6 +110,9 @@ class  NotificationForm extends ConfigFormBase {
         parent::submitForm($form, $form_state);
     }
 
+
+
+
     private function getCleanFirebaseCode($firebase_code){
         $firebase_code = preg_replace('<.*?script.*\/?>','',$firebase_code);
         $firebase_code = str_replace('// Initialize Firebase', '', $firebase_code);
@@ -105,6 +129,12 @@ class  NotificationForm extends ConfigFormBase {
         $firebase_code = str_replace('projectId', '"projectId"', $firebase_code);
         $firebase_code = str_replace('storageBucket', '"storageBucket"', $firebase_code);
         $firebase_code = str_replace('messagingSenderId', '"messagingSenderId"', $firebase_code);
+
+        //start and end with {}
+        if(substr($firebase_code,0,1) != '{')
+            $firebase_code = '{'. $firebase_code;
+        if(substr($firebase_code,strlen($firebase_code)-1,1) != '}')
+            $firebase_code .= '}';
 
         return $firebase_code;
     }
