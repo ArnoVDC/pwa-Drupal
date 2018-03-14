@@ -19,6 +19,11 @@ class ConfigurationForm extends ConfigFormBase {
         return 'pwa_configuration_form';
     }
 
+    /**
+     * @param array $form
+     * @param FormStateInterface $form_state
+     * @return array
+     */
     public function buildForm(array $form, FormStateInterface $form_state) {
         $config = $this->config('pwa.config');
 
@@ -185,6 +190,11 @@ class ConfigurationForm extends ConfigFormBase {
             $form_state->setErrorByName('image', $this->t('Upload a image, or chose the theme image.'));
     }
 
+    /**
+     * function saves configuration and image's
+     * @param array $form
+     * @param FormStateInterface $form_state
+     */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $manifestClass = new manifestClass();
         $config = $this->config('pwa.config');

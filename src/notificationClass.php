@@ -6,6 +6,11 @@ namespace Drupal\pwa;
 class notificationClass {
     public function __construct() { }
 
+    /**
+     * function to send a notification to all the users
+     * @param $title
+     * @param $message
+     */
     public function sendMessageToAllUsers($title, $message) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
         $tokens = $config->get('tokens');

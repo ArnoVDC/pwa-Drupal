@@ -10,6 +10,12 @@ class  NotificationForm extends ConfigFormBase {
 
     private $firebase_code, $firebase_code_clean;
 
+    /**
+     *
+     * @param array $form
+     * @param FormStateInterface $form_state
+     * @return array
+     */
     public function buildForm(array $form, FormStateInterface $form_state) {
         $config = \Drupal::config('pwa.config');
 
@@ -54,6 +60,11 @@ class  NotificationForm extends ConfigFormBase {
         return parent::buildForm($form, $form_state);
     }
 
+    /**
+     * function checks if the firebase code is right
+     * @param array $form
+     * @param FormStateInterface $form_state
+     */
     public function validateForm(array &$form, FormStateInterface $form_state) {
         parent::validateForm($form, $form_state);
 
@@ -61,8 +72,6 @@ class  NotificationForm extends ConfigFormBase {
         $this->firebase_code_clean = $this->getCleanFirebaseCode($this->firebase_code);
 
         $this->firebase_code_clean = json_decode($this->firebase_code_clean,true);
-
-
 
         if($this->firebase_code_clean['apiKey'] ==''||
             $this->firebase_code_clean['authDomain'] ==''||
@@ -78,14 +87,16 @@ class  NotificationForm extends ConfigFormBase {
     }
 
 
+    /**
+     * function saves all values and sends the message
+     * @param array $form
+     * @param FormStateInterface $form_state
+     */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
 
-
-
         $config->set('firebase_code', $this->firebase_code)->save();
         $config->set('firebase_code_clean', $this->firebase_code_clean)->save();
-
 
         $config->set('apiKey', $this->firebase_code_clean['apiKey'])->save();
         $config->set('authDomain',  $this->firebase_code_clean['authDomain'])->save();
@@ -106,13 +117,14 @@ class  NotificationForm extends ConfigFormBase {
             $form_state->getValue('message')
         );
 
-
         parent::submitForm($form, $form_state);
     }
 
-
-
-
+    /**
+     * function makes the firebase code a json string
+     * @param $firebase_code
+     * @return mixed|null|string|string[]
+     */
     private function getCleanFirebaseCode($firebase_code){
         $firebase_code = preg_replace('<.*?script.*\/?>','',$firebase_code);
         $firebase_code = str_replace('// Initialize Firebase', '', $firebase_code);

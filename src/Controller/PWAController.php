@@ -35,16 +35,23 @@ class PWAController extends ControllerBase {
         ];
     }
 
+    /**
+     * route generates the manifest file for the browser
+     * @return Response
+     */
     public function pwa_get_manifest() {
         $manifestClass = new manifestClass();
         $content = $manifestClass->get_output();
-
 
         return new Response($content, 200, [
             'Content-Type' => 'application/json'
         ]);
     }
 
+    /**
+     * returns the firebase service worker and add's the necessary libaries and dynamic variables
+     * @return Response
+     */
     public function pwa_get_firebase_sw() {
         $config = \Drupal::config('pwa.config');
         $messagingKey = $config->get('messagingSenderId');
@@ -62,6 +69,11 @@ class PWAController extends ControllerBase {
         ]);
     }
 
+    /**
+     * function recieves the user token and save's it in the configurations
+     * @param Request $request
+     * @return Response
+     */
     public function pwa_token_recieved(Request $request) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
         $post = $request->getContent();
@@ -81,6 +93,10 @@ class PWAController extends ControllerBase {
         ]);
     }
 
+    /**
+     * response with the configuration that the client needs to connect to firebase
+     * @return Response
+     */
     public function pwa_firebase_config() {
         $config = \Drupal::config('pwa.config');
 

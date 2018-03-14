@@ -11,7 +11,8 @@ class manifestClass {
     }
 
     /**
-     *function creates the manifest file
+     * returns the manifest json string
+     * @return string
      */
     public function get_output() {
         //get values
@@ -105,7 +106,7 @@ class manifestClass {
     }
 
     /**
-     *function deletes the image that is used for the manifest file
+     *function deletes the images that is used for the manifest file
      */
     public function delete_image() {
         $config = \Drupal::config('pwa.config');
