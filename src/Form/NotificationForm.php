@@ -11,48 +11,12 @@ class  NotificationForm extends ConfigFormBase {
     public function buildForm(array $form, FormStateInterface $form_state) {
         $config = \Drupal::config('pwa.config');
 
-
-        $form['apiKey'] = [
-            "#type" => 'textfield',
-            "#title"=> $this->t("apiKey"),
+        $form['firebase_code'] = [
+            "#type" => 'textarea',
+            "#title"=> $this->t("Firebase configuration code"),
             "#required" => true,
-            "#default_value" => $config->get('apiKey'),
-            "#maxlength" => 160,
-        ];
-        $form['authDomain'] = [
-            "#type" => 'textfield',
-            "#title"=> $this->t("authDomain"),
-            "#required" => true,
-            "#default_value" => $config->get('authDomain'),
-            "#maxlength" => 160,
-        ];
-        $form['databaseURL'] = [
-            "#type" => 'textfield',
-            "#title"=> $this->t("databeseURL"),
-            "#required" => true,
-            "#default_value" => $config->get('databaseURL'),
-            "#maxlength" => 160,
-        ];
-        $form['projectId'] = [
-            "#type" => 'textfield',
-            "#title"=> $this->t("projectId"),
-            "#required" => true,
-            "#default_value" => $config->get('projectId'),
-            "#maxlength" => 160,
-        ];
-        $form['storageBucket'] = [
-            "#type" => 'textfield',
-            "#title"=> $this->t("storageBucket"),
-            "#required" => true,
-            "#default_value" => $config->get('storageBucket'),
-            "#maxlength" => 160,
-        ];
-        $form['messagingSenderId'] = [
-            "#type" => 'textfield',
-            "#title"=> $this->t("messagingSenderId"),
-            "#required" => true,
-            "#default_value" => $config->get('messagingSenderId'),
-            "#maxlength" => 160,
+            "#default_value" => $config->get('firebase_code'),
+            '#description'=> $this->t('Copy and past your firebase configurationcode (for web) here. You can copy the code with the script tags.')
         ];
         $form['keyPair'] = [
             "#type" => 'textfield',
@@ -92,14 +56,25 @@ class  NotificationForm extends ConfigFormBase {
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $config = \Drupal::service('config.factory')->getEditable('pwa.config');
 
-        $config->set('apiKey', $form_state->getValue('apiKey'))->save();
-        $config->set('authDomain', $form_state->getValue('authDomain'))->save();
-        $config->set('databaseURL', $form_state->getValue('databaseURL'))->save();
-        $config->set('projectId', $form_state->getValue('projectId'))->save();
-        $config->set('storageBucket', $form_state->getValue('storageBucket'))->save();
-        $config->set('messagingSenderId', $form_state->getValue('messagingSenderId'))->save();
-        $config->set('keyPair', $form_state->getValue('keyPair'))->save();
+        $firebase_code = $form_state->getValue('firebase_code');
+        $firebase_code_clean = $this->getCleanFirebaseCode($firebase_code);
 
+        $config->set('firebase_code', $firebase_code)->save();
+        $config->set('firebase_code_clean', $firebase_code_clean)->save();
+
+        $firebase_code_clean = json_decode($firebase_code_clean,true);
+
+        $config->set('description', $firebase_code_clean['apiKey'])->save();
+
+        $config->set('apiKey', $firebase_code_clean['apiKey'])->save();
+        $config->set('authDomain',  $firebase_code_clean['authDomain'])->save();
+        $config->set('databaseURL',  $firebase_code_clean['databaseURL'])->save();
+        $config->set('projectId',  $firebase_code_clean['projectId'])->save();
+        $config->set('storageBucket',  $firebase_code_clean['storageBucket'])->save();
+        $config->set('messagingSenderId',  $firebase_code_clean['messagingSenderId'])->save();
+
+        //codes still to get
+        $config->set('keyPair', $form_state->getValue('keyPair'))->save();
         $config->set('server_key', $form_state->getValue('key'))->save();
 
         //send notification
@@ -112,6 +87,26 @@ class  NotificationForm extends ConfigFormBase {
 
 
         parent::submitForm($form, $form_state);
+    }
+
+    private function getCleanFirebaseCode($firebase_code){
+        $firebase_code = preg_replace('<.*?script.*\/?>','',$firebase_code);
+        $firebase_code = str_replace('// Initialize Firebase', '', $firebase_code);
+        $firebase_code = str_replace('var config = ', '', $firebase_code);
+        $firebase_code = str_replace('firebase.initializeApp(config);', '', $firebase_code);
+        $firebase_code =str_replace(';', '', $firebase_code);
+        $firebase_code = preg_replace('(\r|\n)', '', $firebase_code);
+        $firebase_code = trim($firebase_code);
+
+        //put names between ""
+        $firebase_code = str_replace('apiKey', '"apiKey"', $firebase_code);
+        $firebase_code = str_replace('authDomain', '"authDomain"', $firebase_code);
+        $firebase_code = str_replace('databaseURL', '"databaseURL"', $firebase_code);
+        $firebase_code = str_replace('projectId', '"projectId"', $firebase_code);
+        $firebase_code = str_replace('storageBucket', '"storageBucket"', $firebase_code);
+        $firebase_code = str_replace('messagingSenderId', '"messagingSenderId"', $firebase_code);
+
+        return $firebase_code;
     }
 
 
