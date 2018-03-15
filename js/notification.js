@@ -1,5 +1,8 @@
 
 var xhr = new XMLHttpRequest();
+var key = '';
+var firebaseEnabled = false;
+var firebaseEnabledCallback = false;
 xhr.open("GET", '/firebase-get-config', true);
 
 xhr.onreadystatechange = function () {
@@ -7,44 +10,53 @@ xhr.onreadystatechange = function () {
         var res = JSON.parse(xhr.response);
         config = res.config;
         key = res.publicClientkey;
-        initFirebase(config, key);
+        if(!firebaseEnabled){
+            firebase.initializeApp(config);
+            firebaseEnabled = true;
+            if(firebaseEnabledCallback) initNotification();
+        }
+        
     }
 };
 xhr.send();
 
+var messaging, messagingToken;
 
-function initFirebase(config, key) {
+function initNotification() {
 
-    firebase.initializeApp(config);
-    const messaging = firebase.messaging();
+    if(!firebaseEnabled) return;
+    
+    messaging = '';
+
+    messaging = firebase.messaging();
 
     messaging.usePublicVapidKey(key);
 
     messaging.requestPermission()
         .then(function () {
-            console.log('Notification permission granted.');
-            return messaging.getToken()
+            updateButtonUi();
+            return messaging.getToken(true)
         })
         .then(function (currentToken) {
             console.log('token: ' + currentToken + '; this was the token');
+            messagingToken = currentToken;
             sendTokenToServer(currentToken);
         })
         .catch(function (err) {
             console.log('An error occurred while retrieving token. ', err);
         })
         .catch(function (err) {
-            console.log('Unable to get permission to notify.', err);
+            updateButtonUi();
         });
 
-    messaging.onMessage(function (payload) {
-        console.log("Message received. ", payload);
+        messaging.onMessage(function (payload) {
+            console.log("Message received. ", payload);
     });
 
     messaging.onTokenRefresh(function () {
         messaging.getToken()
             .then(function (refreshedToken) {
-                console.log('Token refreshed.');
-
+               messagingToken = refreshedToken;
             })
             .catch(function (err) {
                 console.log('Unable to retrieve refreshed token ', err);
@@ -65,4 +77,44 @@ function sendTokenToServer(token) {
         }
     };
     xhr.send('{ "token": "' + token + '" }');
+}
+
+    var button;
+    var notificationsEnabled = false;
+    window.onload = function(){
+        var enbaleNotificationCookie = document.cookie.replace(/(?:(?:^|.*;\s*)enableNotifications\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        if(enbaleNotificationCookie == ''){
+            document.cookie += 'enableNotifications=false;';
+            enbaleNotificationCookie = false;
+        };
+
+        //convert string to boolean
+        notificationsEnabled = enbaleNotificationCookie == 'true';
+
+        if(notificationsEnabled){
+            if(firebaseEnabled) initNotification();
+            else firebaseEnabledCallback = true; 
+        }
+            
+
+        button =  document.getElementById('pwa_notifications');
+
+        updateButtonUi();
+        button.addEventListener("click", buttonClick); 
+};
+
+function buttonClick(){
+    notificationsEnabled = !notificationsEnabled;
+    updateButtonUi();
+    if(notificationsEnabled) initNotification();    
+    else messaging.deleteToken(messagingToken);
+    document.cookie = "enableNotifications=" + notificationsEnabled;
+}
+
+
+function updateButtonUi(){
+    if(button == null) return;
+    if(notificationsEnabled) button.innerText = 'Disable notifications';
+    else button.innerText = 'Enable notifications';
 }
