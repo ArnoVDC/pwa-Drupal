@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\pwa\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -21,14 +22,14 @@ class  NotificationForm extends ConfigFormBase {
 
         $form['firebase_code'] = [
             "#type" => 'textarea',
-            "#title"=> $this->t("Firebase configuration code"),
+            "#title" => $this->t("Firebase configuration code"),
             "#required" => true,
             "#default_value" => $config->get('firebase_code'),
-            '#description'=> $this->t('Copy and past your firebase configurationcode (for web) here. You can copy the code with the script tags. You can learn how right <a target="_blank" href="https://firebase.google.com/docs/web/setup">here</a>.')
+            '#description' => $this->t('Copy and past your firebase configurationcode (for web) here. You can copy the code with the script tags. You can learn how right <a target="_blank" href="https://firebase.google.com/docs/web/setup">here</a>.')
         ];
         $form['keyPair'] = [
             "#type" => 'textfield',
-            "#title"=> $this->t("Webpush certificate, public key"),
+            "#title" => $this->t("Webpush certificate, public key"),
             "#description" => $this->t('You can find/generate tis key under firebase settings->cloud messaging'),
             "#required" => true,
             "#default_value" => $config->get('keyPair'),
@@ -37,7 +38,7 @@ class  NotificationForm extends ConfigFormBase {
 
         $form['key'] = [
             "#type" => 'textfield',
-            "#title"=> $this->t("server key"),
+            "#title" => $this->t("Server key"),
             "#description" => $this->t('You can find the server key under firebase settings->cloud messaging. Make sure you don\'t use the old one.'),
             "#required" => true,
             "#default_value" => $config->get('server_key'),
@@ -58,7 +59,10 @@ class  NotificationForm extends ConfigFormBase {
             "#maxlength" => 255,
         ];
 
-        return parent::buildForm($form, $form_state);
+        $out = parent::buildForm($form, $form_state);
+        $out['actions']['submit']['#value'] = 'Send notification';
+
+        return $out;
     }
 
     /**
@@ -72,21 +76,51 @@ class  NotificationForm extends ConfigFormBase {
         $this->firebase_code = $form_state->getValue('firebase_code');
         $this->firebase_code_clean = $this->getCleanFirebaseCode($this->firebase_code);
 
-        $this->firebase_code_clean = json_decode($this->firebase_code_clean,true);
+        $this->firebase_code_clean = json_decode($this->firebase_code_clean, true);
 
-        if($this->firebase_code_clean['apiKey'] ==''||
-            $this->firebase_code_clean['authDomain'] ==''||
-            $this->firebase_code_clean['databaseURL'] ==''||
-            $this->firebase_code_clean['projectId'] ==''||
-            $this->firebase_code_clean['storageBucket'] ==''||
-            $this->firebase_code_clean['messagingSenderId'] ==''
-        ){
+        if ($this->firebase_code_clean['apiKey'] == '' ||
+            $this->firebase_code_clean['authDomain'] == '' ||
+            $this->firebase_code_clean['databaseURL'] == '' ||
+            $this->firebase_code_clean['projectId'] == '' ||
+            $this->firebase_code_clean['storageBucket'] == '' ||
+            $this->firebase_code_clean['messagingSenderId'] == ''
+        ) {
             $s = htmlentities('Could not handle firebase code, make sure all of the code is copied. (ex.:"<script src= ... firebase.initializeApp(config);</script>")');
             $form_state->setErrorByName('firebase_code', $this->t($s));
         }
 
     }
 
+    /**
+     * function makes the firebase code a json string
+     * @param $firebase_code
+     * @return mixed|null|string|string[]
+     */
+    private function getCleanFirebaseCode($firebase_code) {
+        $firebase_code = preg_replace('<.*?script.*\/?>', '', $firebase_code);
+        $firebase_code = str_replace('// Initialize Firebase', '', $firebase_code);
+        $firebase_code = str_replace('var config = ', '', $firebase_code);
+        $firebase_code = str_replace('firebase.initializeApp(config);', '', $firebase_code);
+        $firebase_code = str_replace(';', '', $firebase_code);
+        $firebase_code = preg_replace('(\r|\n)', '', $firebase_code);
+        $firebase_code = trim($firebase_code);
+
+        //put names between ""
+        $firebase_code = str_replace('apiKey', '"apiKey"', $firebase_code);
+        $firebase_code = str_replace('authDomain', '"authDomain"', $firebase_code);
+        $firebase_code = str_replace('databaseURL', '"databaseURL"', $firebase_code);
+        $firebase_code = str_replace('projectId', '"projectId"', $firebase_code);
+        $firebase_code = str_replace('storageBucket', '"storageBucket"', $firebase_code);
+        $firebase_code = str_replace('messagingSenderId', '"messagingSenderId"', $firebase_code);
+
+        //start and end with {}
+        if (substr($firebase_code, 0, 1) != '{')
+            $firebase_code = '{' . $firebase_code;
+        if (substr($firebase_code, strlen($firebase_code) - 1, 1) != '}')
+            $firebase_code .= '}';
+
+        return $firebase_code;
+    }
 
     /**
      * function saves all values and sends the message
@@ -100,11 +134,11 @@ class  NotificationForm extends ConfigFormBase {
         $config->set('firebase_code_clean', $this->firebase_code_clean)->save();
 
         $config->set('apiKey', $this->firebase_code_clean['apiKey'])->save();
-        $config->set('authDomain',  $this->firebase_code_clean['authDomain'])->save();
-        $config->set('databaseURL',  $this->firebase_code_clean['databaseURL'])->save();
-        $config->set('projectId',  $this->firebase_code_clean['projectId'])->save();
-        $config->set('storageBucket',  $this->firebase_code_clean['storageBucket'])->save();
-        $config->set('messagingSenderId',  $this->firebase_code_clean['messagingSenderId'])->save();
+        $config->set('authDomain', $this->firebase_code_clean['authDomain'])->save();
+        $config->set('databaseURL', $this->firebase_code_clean['databaseURL'])->save();
+        $config->set('projectId', $this->firebase_code_clean['projectId'])->save();
+        $config->set('storageBucket', $this->firebase_code_clean['storageBucket'])->save();
+        $config->set('messagingSenderId', $this->firebase_code_clean['messagingSenderId'])->save();
 
         //codes still to get
         $config->set('keyPair', $form_state->getValue('keyPair'))->save();
@@ -122,36 +156,14 @@ class  NotificationForm extends ConfigFormBase {
     }
 
     /**
-     * function makes the firebase code a json string
-     * @param $firebase_code
-     * @return mixed|null|string|string[]
+     * Returns a unique string identifying the form.
+     *
+     * @return string
+     *   The unique string identifying the form.
      */
-    private function getCleanFirebaseCode($firebase_code){
-        $firebase_code = preg_replace('<.*?script.*\/?>','',$firebase_code);
-        $firebase_code = str_replace('// Initialize Firebase', '', $firebase_code);
-        $firebase_code = str_replace('var config = ', '', $firebase_code);
-        $firebase_code = str_replace('firebase.initializeApp(config);', '', $firebase_code);
-        $firebase_code =str_replace(';', '', $firebase_code);
-        $firebase_code = preg_replace('(\r|\n)', '', $firebase_code);
-        $firebase_code = trim($firebase_code);
-
-        //put names between ""
-        $firebase_code = str_replace('apiKey', '"apiKey"', $firebase_code);
-        $firebase_code = str_replace('authDomain', '"authDomain"', $firebase_code);
-        $firebase_code = str_replace('databaseURL', '"databaseURL"', $firebase_code);
-        $firebase_code = str_replace('projectId', '"projectId"', $firebase_code);
-        $firebase_code = str_replace('storageBucket', '"storageBucket"', $firebase_code);
-        $firebase_code = str_replace('messagingSenderId', '"messagingSenderId"', $firebase_code);
-
-        //start and end with {}
-        if(substr($firebase_code,0,1) != '{')
-            $firebase_code = '{'. $firebase_code;
-        if(substr($firebase_code,strlen($firebase_code)-1,1) != '}')
-            $firebase_code .= '}';
-
-        return $firebase_code;
+    public function getFormId() {
+        return 'pwa_notification_form';
     }
-
 
     /**
      * Gets the configuration names that will be editable.
@@ -162,15 +174,5 @@ class  NotificationForm extends ConfigFormBase {
      */
     protected function getEditableConfigNames() {
         return ['pwa.notifications.config'];
-    }
-
-    /**
-     * Returns a unique string identifying the form.
-     *
-     * @return string
-     *   The unique string identifying the form.
-     */
-    public function getFormId() {
-        return 'pwa_notification_form';
     }
 }
