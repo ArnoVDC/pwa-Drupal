@@ -19,7 +19,6 @@ function pwa_page_attachments(array &$attachments) {
         'precache' => ['/', '/offline'],
     ];
 
-    //Arno code
     $language_manager = \Drupal::languageManager();
     $lang = $language_manager->getCurrentLanguage()->getId();
     //default language gets ignored in url
