@@ -11,9 +11,10 @@ class manifestClass {
   }
 
   /**
-   * returns the manifest json string
+   *Function created the manifest json string based on the configurations.
    *
    * @return string
+   *  manifest json string.
    */
   public function get_output() {
     //get values
@@ -51,9 +52,10 @@ class manifestClass {
   }
 
   /**
-   * function checks the values in config and add default value if necessary
+   * function checks the values in config and add default value if necessary.
    *
    * @return array
+   *  the values from the configuration.
    */
   private function getCleanValues() {
     $output = [];
@@ -77,7 +79,7 @@ class manifestClass {
     $input['default_image'] = $config_get->get('default_image');
     $input['image_small'] = $config_get->get('image_small');
 
-    if ($input["default_image"] == TRUE) {
+    if ($input['default_image'] == TRUE) {
       $input['image'] = theme_get_setting('logo')['url'];
       $input['image_small'] = $input['image'];
     }
@@ -96,7 +98,6 @@ class manifestClass {
         }
         else {
           if ($key === 'image' && $input['dafault_image'] != 1) {
-            //todo make img not found
             $output[$key] = 'url/to/default/img';
             $config->set($key, 'url/to/default/img')->save();
           }
@@ -121,7 +122,7 @@ class manifestClass {
   }
 
   /**
-   *function deletes the images that is used for the manifest file
+   *function deletes the images that are used for the manifest file.
    */
   public function delete_image() {
     $config = \Drupal::config('pwa.config');

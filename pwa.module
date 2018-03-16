@@ -7,8 +7,6 @@ use Drupal\pwa\manifestClass;
 
 /**
  * Implements hook_page_attachments().
- *
- * @param array $attachments
  */
 function pwa_page_attachments(array &$attachments) {
   if (!\Drupal::currentUser()->hasPermission('access pwa')) {
@@ -53,5 +51,3 @@ function pwa_page_attachments(array &$attachments) {
   ];
 
 }
-
-

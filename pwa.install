@@ -17,7 +17,7 @@ function pwa_requirements($phase) {
   }
 
   $t = 't';
-  if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER["REQUEST_SCHEME"]) && $_SERVER["REQUEST_SCHEME"] === 'https')) {
+  if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] === 'https')) {
     $requirements['pwa'] = [
       'title' => $t('Progressive Web App'),
       'value' => $t('HTTPS on'),
@@ -78,4 +78,3 @@ function pwa_uninstall() {
   $controller = new manifestClass();
   $controller->delete_image();
 }
-
