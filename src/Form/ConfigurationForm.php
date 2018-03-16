@@ -210,6 +210,21 @@ class ConfigurationForm extends ConfigFormBase {
             }
         }
 
+        $configTheme = \Drupal::config('system.theme');
+        $nameOfDefaultTheme = $configTheme->get('default');
+
+        if($default_image){
+            $theme_image = theme_get_setting('logo',$nameOfDefaultTheme)['url'];
+          if(substr($theme_image,strlen ($theme_image)-3,3)!= 'png'){
+              drupal_set_message(t('The theme image is not a .png file, your users may not be able to add this website to the homescreen.'),'warning');
+          }
+          $image_size = getimagesize($theme_image);
+          if($image_size[0] == $image_size[1] ){
+              drupal_set_message(t('The theme image is not a square, your application image maybe altered (recommended size: 512x512).'), 'warning');
+          }
+        }
+
+
         $config->set('site_name', $form_state->getValue('name'))->save();
         $config->set('short_name', $form_state->getValue('short_name'))->save();
         $config->set('theme_color', $form_state->getValue('theme_color'))->save();
