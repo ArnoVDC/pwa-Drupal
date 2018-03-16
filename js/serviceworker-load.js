@@ -1,5 +1,5 @@
 (function (drupalSettings) {
-  
+
   if (!('serviceWorker' in navigator)) {
     return;
   }
@@ -11,10 +11,11 @@
   function loadPage(url) {
     let iframe = document.createElement('iframe');
     // When loaded remove from page.
-    iframe.addEventListener('load', (event) => {
+    iframe.addEventListener('load', (event) = > {
       iframe.remove();
-      iframe = null;
-    });
+    iframe = null;
+  })
+    ;
     iframe.setAttribute('width', width);
     iframe.setAttribute('height', height);
     iframe.setAttribute('style', 'position:absolute;top:-110%;left:-110%;');
@@ -25,19 +26,22 @@
   var sw = true;
 
   navigator.serviceWorker.register('/serviceworker-pwa.js', {
-      scope: '/'
-    })
-    .then((registration) => {
-      // Only add default pages to cache if the SW is being installed.
-      if (registration.installing) {
-        // open the pages to cache in an iframe because assets are not
-        // predictable.
-        drupalSettings.pwa.precache.forEach(loadPage);
-      }
-    })
-    .catch(function (err) {
-      sw = false;
-    });
+    scope: '/'
+  })
+      .then((registration) = > {
+    // Only add default pages to cache if the SW is being installed.
+    if(registration.installing
+)
+  {
+    // open the pages to cache in an iframe because assets are not
+    // predictable.
+    drupalSettings.pwa.precache.forEach(loadPage);
+  }
+})
+.
+  catch(function (err) {
+    sw = false;
+  });
 
   // Reload page when user is back online on a fallback offline page.
   window.addEventListener('online', function () {
