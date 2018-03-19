@@ -72,7 +72,7 @@ function initNotification() {
   messaging.onTokenRefresh(function () {
     messaging.getToken()
       .then(function (refreshedToken) {
-        messagingToken = refreshedToken;
+        firebaseMessagingToken = refreshedToken;
       })
       .catch(function (err) {
         notificationsEnabled = false;
@@ -126,9 +126,9 @@ window.onload = function () {
 function buttonClick() {
   notificationsEnabled = !notificationsEnabled;
   updateButtonUi();
-  if (notificationsEnabled) initNotification();
-  else messaging.deleteToken(messagingToken);
   document.cookie = "enableNotifications=" + notificationsEnabled;
+  if (notificationsEnabled) initNotification();
+  else messaging.deleteToken(firebaseMessagingToken);
 }
 
 
