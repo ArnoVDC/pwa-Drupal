@@ -9,45 +9,36 @@ use Drupal\pwa\manifestClass;
  * Implements hook_page_attachments().
  */
 function pwa_page_attachments(array &$attachments) {
-  if (!\Drupal::currentUser()->hasPermission('access pwa')) {
-    return;
-  }
+    if (!\Drupal::currentUser()->hasPermission('access pwa')) {
+        return;
+    }
 
-  $attachments['#attached']['library'][] = 'pwa/serviceworker';
-  $attachments['#attached']['drupalSettings']['pwa'] = [
-    'precache' => ['/', '/offline'],
-  ];
+    $attachments['#attached']['library'][] = 'pwa/serviceworker';
+    $attachments['#attached']['drupalSettings']['pwa'] = [
+        'precache' => ['/', '/offline'],
+    ];
 
-  $language_manager = \Drupal::languageManager();
-  $lang = $language_manager->getCurrentLanguage()->getId();
-  //default language gets ignored in url
-  if ($lang == $language_manager->getDefaultLanguage()->getId()) {
-    $lang = '';
-  }
-  else {
-    $lang = '/' . $lang;
-  }
-  $attachments['#attached']['html_head'][] = [
-    [
-      '#tag' => 'link',
-      '#attributes' => [
-        'rel' => 'manifest',
-        'href' => $lang . '/manifest.json',
-      ],
-    ],
-    'manifest',
-  ];
+    //Arno code
+    $language_manager = \Drupal::languageManager();
+    $lang = $language_manager->getCurrentLanguage()->getId();
+    //default language gets ignored in url
+    if ($lang == $language_manager->getDefaultLanguage()->getId()) $lang = '';
+    else $lang = '/' . $lang;
+    $attachments['#attached']['html_head'][] = [[
+        '#tag' => 'link',
+        '#attributes' => [
+            'rel' => 'manifest',
+            'href' => $lang . '/manifest.json',
+        ],
+    ], 'manifest'];
 
-  $config = \Drupal::config('pwa.config');
-  $attachments['#attached']['html_head'][] = [
-    [
-      '#tag' => 'meta',
-      '#attributes' => [
-        'name' => 'theme-color',
-        'content' => $config->get('theme_color'),
-      ],
-    ],
-    'meta_theme_color',
-  ];
+    $config = \Drupal::config('pwa.config');
+    $attachments['#attached']['html_head'][] = [[
+        '#tag' => 'meta',
+        '#attributes' => [
+            'name' => 'theme-color',
+            'content' => $config->get('theme_color'),
+        ],
+    ], 'meta_theme_color'];
 
 }

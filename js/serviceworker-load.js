@@ -11,7 +11,7 @@
   function loadPage(url) {
     let iframe = document.createElement('iframe');
     // When loaded remove from page.
-    iframe.addEventListener('load', (event) = > {
+    iframe.addEventListener('load', (event) => {
       iframe.remove();
     iframe = null;
   })
@@ -28,7 +28,7 @@
   navigator.serviceWorker.register('/serviceworker-pwa.js', {
     scope: '/'
   })
-      .then((registration) = > {
+      .then((registration) => {
     // Only add default pages to cache if the SW is being installed.
     if(registration.installing
 )

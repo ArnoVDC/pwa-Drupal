@@ -23,3 +23,28 @@ pwa.manifest:
     _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_manifest'
   requirements:
     _access: 'TRUE'
+pwa.firebase.sw:
+  path: /firebase-messaging-sw.js
+  defaults:
+   _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_firebase_sw'
+  requirements:
+    _access: 'TRUE'
+pwa.recieve.token:
+  path: /firebase-send-token
+  defaults:
+    _controller: '\Drupal\pwa\Controller\PWAController::pwa_token_recieved'
+  requirements:
+    _access: 'TRUE'
+pwa.config.notification:
+  path: '/admin/config/services/notifications'
+  defaults:
+    _form: '\Drupal\pwa\Form\NotificationForm'
+    _title: 'Send notifications'
+  requirements:
+    _permission: 'administer pwa'
+pwa.firebase.config:
+  path: /firebase-get-config
+  defaults:
+    _controller: '\Drupal\pwa\Controller\PWAController::pwa_firebase_config'
+  requirements:
+    _access: 'TRUE'

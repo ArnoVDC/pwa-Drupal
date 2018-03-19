@@ -1,15 +1,15 @@
 // Use the serviceworker ASAP.
-self.addEventListener('install', (event) = > event.waitUntil(self.skipWaiting())
+self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting())
 )
 ;
-self.addEventListener('activate', (event) = > event.waitUntil(self.clients.claim())
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim())
 )
 ;
 
 /**
  *  use network with cache fallback.
  */
-self.addEventListener('fetch', (event) = > {
+self.addEventListener('fetch', (event) => {
   /**
    * @param {Response} response
    *
@@ -24,7 +24,7 @@ self.addEventListener('fetch', (event) = > {
     const copy = response.clone();
     caches
         .open('pwa')
-        .then((cache) = > cache.put(event.request, copy)
+        .then((cache) => cache.put(event.request, copy)
   )
     ;
   }
@@ -36,7 +36,7 @@ function networkWithCacheFallback(request) {
   function cacheFallback(error) {
     return caches
         .match(request)
-        .then((response) = > {
+        .then((response) => {
       // if not found in cache, return default offline content
       // only if this is a navigation request.
       if(
