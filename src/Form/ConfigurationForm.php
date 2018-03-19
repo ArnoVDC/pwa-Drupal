@@ -108,9 +108,18 @@ class ConfigurationForm extends ConfigFormBase {
       $form['default_image']['#states']['checked'][':input[name="image[fids]"]']['value'] = '';
     }
 
+    $form['images'] = [
+      '#type' => 'fieldset',
+      '#states' => array(
+        'invisible' => array(
+          ':input[name="default_image"]' => array('checked' => TRUE),
+        ),
+      ),
+    ];
+
     //the #states doesn't work ==> isue in Drupal core https://www.drupal.org/node/2847425
     //workaround: checkbox get's uncheck when uploading a custom image
-    $form['image'] = [
+    $form['images']['image'] = [
       '#type' => 'managed_file',
       '#name' => 'image',
       '#title' => t('Image'),
@@ -120,10 +129,9 @@ class ConfigurationForm extends ConfigFormBase {
       '#upload_location' => 'public://pwa/',
     ];
 
-    //drupal issue https://www.drupal.org/project/drupal/issues/783438
     $bobTheHTMLBuilder = '<label>Current Image:</label> <br/> <img src="' . $config->get('image') . '" width="200"/>';
     if ($config->get('default_image') == 0) {
-      $form['current_image'] = [
+      $form['images']['current_image'] = [
         '#markup' => $bobTheHTMLBuilder,
         '#name' => 'current image',
         '#id' => 'current_image',
