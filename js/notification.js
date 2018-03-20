@@ -18,7 +18,7 @@ function getFirebaseConfiguration() {
   xhr.open("GET", '/firebase-get-config', true);
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
       var res = JSON.parse(xhr.response);
       firebaseConfig = res.config;
       firebaseMessagingKey = res.publicClientkey;
@@ -36,11 +36,11 @@ function getFirebaseConfiguration() {
 function initNotification() {
 
   //check if firebase can be created else return
-  if (!firebaseEnabled && firebaseConfig != undefined) {
+  if (!firebaseEnabled && firebaseConfig !== undefined) {
     firebase.initializeApp(firebaseConfig);
     firebaseEnabled = true;
   }
-  else if (!firebaseEnabled && firebaseConfig == undefined) {
+  else if (!firebaseEnabled && firebaseConfig === undefined) {
     firebaseEnabledCallback = true;
     getFirebaseConfiguration();
     return;
@@ -89,7 +89,7 @@ function sendTokenToServer(token) {
   xhr.setRequestHeader("Content-type", "application/json");
 
   xhr.onreadystatechange = function () {
-    if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) 
+    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200)
       console.info('token send to server');
   };
   xhr.send('{ "token": "' + token + '" }');
@@ -98,13 +98,13 @@ function sendTokenToServer(token) {
 function getCookie(){
   var enbaleNotificationCookie = document.cookie.replace(/(?:(?:^|.*;\s*)enableNotifications\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-  if (enbaleNotificationCookie == '') {
+  if (enbaleNotificationCookie === '') {
     document.cookie += 'enableNotifications=false;';
     enbaleNotificationCookie = false;
-  };
+  }
 
    //convert string to boolean
-   notificationsEnabled = enbaleNotificationCookie == 'true';
+   notificationsEnabled = enbaleNotificationCookie === 'true';
 
 }
 
