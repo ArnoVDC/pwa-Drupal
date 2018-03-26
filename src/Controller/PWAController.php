@@ -48,7 +48,7 @@ class PWAController extends ControllerBase {
         importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
         importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
         firebase.initializeApp({\'messagingSenderId\': \''.$messagingKey.'\'});
-        importScripts("/' . $path . '/js/firebase-messaging-sw.js");';
+        const messaging = firebase.messaging();';
 
         return new Response($data, 200, [
             'Content-Type' => 'application/javascript',
