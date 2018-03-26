@@ -1,8 +1,3 @@
-pwa.config:
-  title: PWA settings
-  description: 'Progressive web app configuration'
-  parent: system.admin_config_system
-  route_name: pwa.config
 pwa.config.notification:
   title: Send notification
   description: 'Send a custom notification to your users'

@@ -3,8 +3,7 @@
  * @file
  */
 
-use Drupal\user\RoleInterface,
-  Drupal\pwa\manifestClass;
+use Drupal\user\RoleInterface;
 
 /**
  * Implements hook_requirements().
@@ -50,31 +49,4 @@ function pwa_requirements($phase) {
  */
 function pwa_install() {
   user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access pwa']);
-
-  //default values for the manifest file
-  $systemConfig = \Drupal::config('system.site');
-  $configName = $systemConfig->get('name');
-  $configDescription = $systemConfig->get('slogan');
-  $configLang = \Drupal::languageManager()->getCurrentLanguage()->getId();
-
-
-  $config = \Drupal::service('config.factory')->getEditable('pwa.config');
-
-  $config->set('site_name', $configName)->save();
-  $config->set('short_name', $configName)->save();
-  $config->set('background_color', '#ffffff')->save();
-  $config->set('theme_color', '#ffffff')->save();
-  $config->set('description', $configDescription)->save();
-  $config->set('default_image', TRUE)->save();
-  $config->set('display', 'standalone')->save();
-  $config->set('lang', $configLang)->save();
-
-}
-
-/**
- * Implements hook_uninstall().
- */
-function pwa_uninstall() {
-  $controller = new manifestClass();
-  $controller->delete_image();
 }

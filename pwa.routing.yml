@@ -10,19 +10,6 @@ pwa.offline_page:
     _controller: '\Drupal\pwa\Controller\PWAController::pwa_offline_page'
   requirements:
     _permission: 'access content'
-pwa.config:
-  path: '/admin/config/system/pwa'
-  defaults:
-    _form: '\Drupal\pwa\Form\ConfigurationForm'
-    _title: 'Progressive web app configuration'
-  requirements:
-    _permission: 'administer pwa'
-pwa.manifest:
-  path: /manifest.json
-  defaults:
-    _controller: '\Drupal\pwa\Controller\PWAController::pwa_get_manifest'
-  requirements:
-    _access: 'TRUE'
 pwa.firebase.sw:
   path: /firebase-messaging-sw.js
   defaults:

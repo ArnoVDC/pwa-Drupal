@@ -5,6 +5,5 @@ serviceworker:
     js/notification.js: {}
     js/serviceworker-load.js: {}
 
-
   dependencies:
     - core/drupalSettings

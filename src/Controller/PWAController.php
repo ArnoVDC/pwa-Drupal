@@ -36,19 +36,6 @@ class PWAController extends ControllerBase {
     }
 
     /**
-     * route generates the manifest file for the browser
-     * @return Response
-     */
-    public function pwa_get_manifest() {
-        $manifestClass = new manifestClass();
-        $content = $manifestClass->get_output();
-
-        return new Response($content, 200, [
-            'Content-Type' => 'application/json'
-        ]);
-    }
-
-    /**
      * returns the firebase service worker and add's the necessary libaries and dynamic variables
      * @return Response
      */
@@ -115,7 +102,6 @@ class PWAController extends ControllerBase {
             },
             "publicClientkey": "'. $keyPair .'"
             }';
-
 
         return new Response($data, 200, [
             'Content-Type' => 'application/json',
