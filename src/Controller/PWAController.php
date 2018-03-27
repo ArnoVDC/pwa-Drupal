@@ -17,33 +17,35 @@ class PWAController extends ControllerBase {
     $data = '
         importScripts("/' . $path . '/js/serviceworker.js?' . $query_string . '");';
 
-        return new Response($data, 200, [
-            'Content-Type' => 'application/javascript',
-            'Service-Worker-Allowed' => '/',
-        ]);
-    }
+    return new Response($data, 200, [
+      'Content-Type' => 'application/javascript',
+      'Service-Worker-Allowed' => '/',
+    ]);
+  }
 
-    public function pwa_offline_page() {
-        return [
-            '#type' => 'html_tag',
-            '#tag' => 'h1',
-            '#value' => 'You are offline.',
-            '#attributes' => [
-                'data-drupal-pwa-offline' => true,
-            ],
-        ];
-    }
+  public function pwa_offline_page() {
+    return [
+      '#type' => 'html_tag',
+      '#tag' => 'h1',
+      '#value' => 'You are offline.',
+      '#attributes' => [
+        'data-drupal-pwa-offline' => TRUE,
+      ],
+    ];
+  }
 
-    /**
-     * returns the firebase service worker and add's the necessary libaries and dynamic variables
-     * @return Response
-     */
-    public function pwa_get_firebase_sw() {
-        $config = \Drupal::config('pwa.config');
-        $messagingKey = $config->get('messagingSenderId');
+  /**
+   * returns the firebase service worker and add's the necessary libaries and
+   * dynamic variables
+   *
+   * @return Response
+   */
+  public function pwa_get_firebase_sw() {
+    $config = \Drupal::config('pwa.config');
+    $messagingKey = $config->get('messagingSenderId');
 
-        $path = drupal_get_path('module', 'pwa');
-        $data = '
+    $path = drupal_get_path('module', 'pwa');
+    $data = '
         importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
         importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
         firebase.initializeApp({\'messagingSenderId\': \'' . $messagingKey . '\'});
