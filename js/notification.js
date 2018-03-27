@@ -1,6 +1,5 @@
 let firebaseMessagingKey,
     firebaseConfig,
-    firebaseMessaging,
     firebaseMessagingToken,
     button,
     notificationsEnabled = false,
