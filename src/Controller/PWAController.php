@@ -5,7 +5,7 @@ namespace Drupal\pwa\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Drupal\pwa\manifestClass;
+use Drupal\pwa\manifest;
 
 /**
  * Default controller for the pwa module.
@@ -41,7 +41,7 @@ class PWAController extends ControllerBase {
    * @return Response
    */
   public function pwa_get_manifest() {
-    $manifestClass = new manifestClass();
+    $manifestClass = new manifest();
     $content = $manifestClass->get_output();
 
     return new Response($content, 200, [

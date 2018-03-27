@@ -2,7 +2,7 @@
 
 namespace Drupal\pwa;
 
-class manifestClass {
+class manifest {
 
   private $manifestUri = '';
 
