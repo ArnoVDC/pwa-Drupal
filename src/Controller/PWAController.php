@@ -99,8 +99,8 @@ class PWAController extends ControllerBase {
   }
 
   /**
-   * response with the configuration that the client needs to connect to
-   * firebase
+   * response with the configuration that the client javascript needs to
+   * connect to firebase
    *
    * @return Response
    */

@@ -15,6 +15,7 @@ class notification {
 
   /**
    * function to send a notification to all the users
+   *
    * @param $title
    * @param $message
    */
@@ -22,6 +23,8 @@ class notification {
     $config = \Drupal::service('config.factory')->getEditable('pwa.config');
     $tokens = $config->get('tokens');
     $key = $config->get('server_key');
+    //note: this is the image that is used for the manifest file
+    //see isue: https://www.drupal.org/project/pwa/issues/2954461 for this patch
     $image = $config->get('image');
     $image = 'https://' . $_SERVER['HTTP_HOST'] . $image;
 
