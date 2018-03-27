@@ -3,8 +3,6 @@
  * @file
  */
 
-use Drupal\pwa\manifestClass;
-
 /**
  * Implements hook_page_attachments().
  */

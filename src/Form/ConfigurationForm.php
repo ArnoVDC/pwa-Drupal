@@ -5,7 +5,7 @@ namespace Drupal\pwa\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
-use Drupal\pwa\manifestClass;
+use Drupal\pwa\manifest;
 
 class ConfigurationForm extends ConfigFormBase {
 
@@ -212,7 +212,7 @@ class ConfigurationForm extends ConfigFormBase {
    * @param FormStateInterface $form_state
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $manifestClass = new manifestClass();
+    $manifestClass = new manifest();
     $config = $this->config('pwa.config');
 
     $display = $this->getDisplayValue($form_state->getValue('display'), FALSE);

@@ -4,7 +4,7 @@
  */
 
 use Drupal\user\RoleInterface,
-  Drupal\pwa\manifestClass;
+  Drupal\pwa\manifest;
 
 /**
  * Implements hook_requirements().
@@ -75,6 +75,6 @@ function pwa_install() {
  * Implements hook_uninstall().
  */
 function pwa_uninstall() {
-  $controller = new manifestClass();
+  $controller = new manifest();
   $controller->delete_image();
 }
