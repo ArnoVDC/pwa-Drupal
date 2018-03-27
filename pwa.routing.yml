@@ -19,7 +19,7 @@ pwa.firebase.sw:
 pwa.recieve.token:
   path: /firebase-send-token
   defaults:
-    _controller: '\Drupal\pwa\Controller\PWAController::pwa_token_recieved'
+    _controller: '\Drupal\pwa\Controller\PWAController::pwa_token_received'
   requirements:
     _access: 'TRUE'
 pwa.config.notification:

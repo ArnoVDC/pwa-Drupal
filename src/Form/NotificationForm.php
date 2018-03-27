@@ -46,17 +46,18 @@ class  NotificationForm extends ConfigFormBase {
       "#maxlength" => 160,
     ];
 
+    //title and message are only obligated when there is a configuration.
     $form['title'] = [
       "#type" => 'textfield',
       '#title' => $this->t('Title'),
-      '#required' => TRUE,
+      '#required' => ($config->get('server_key') != ''),
       "#maxlength" => 100,
     ];
 
     $form['message'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Message'),
-      '#required' => TRUE,
+      '#required' => ($config->get('server_key') != ''),
       "#maxlength" => 255,
     ];
 
@@ -101,6 +102,7 @@ class  NotificationForm extends ConfigFormBase {
    * @return mixed|null|string|string[]
    */
   private function getCleanFirebaseCode($firebase_code) {
+    //clear until we only have json code
     $firebase_code = preg_replace('<.*?script.*\/?>', '', $firebase_code);
     $firebase_code = str_replace('// Initialize Firebase', '', $firebase_code);
     $firebase_code = str_replace('var config = ', '', $firebase_code);
@@ -150,18 +152,17 @@ class  NotificationForm extends ConfigFormBase {
       ->save();
     $config->set('messagingSenderId', $this->firebase_code_clean['messagingSenderId'])
       ->save();
-
-    //codes still to get
     $config->set('keyPair', $form_state->getValue('keyPair'))->save();
     $config->set('server_key', $form_state->getValue('key'))->save();
 
     //send notification
     $notification = new notification();
-
-    $notification->sendMessageToAllUsers(
-      $form_state->getValue('title'),
-      $form_state->getValue('message')
-    );
+    if ($form_state->getValue('title') != '' && $form_state->getValue('message') != '') {
+      $notification->sendMessageToAllUsers(
+        $form_state->getValue('title'),
+        $form_state->getValue('message')
+      );
+    }
 
     parent::submitForm($form, $form_state);
   }
